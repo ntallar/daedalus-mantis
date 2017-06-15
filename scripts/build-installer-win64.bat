@@ -78,13 +78,13 @@ pushd installers
 	exit /b 1)
 
 :build
-    call ..\scripts\appveyor-retry call stack --no-terminal build -j 2 --exec make-installer
+    call ..\scripts\appveyor-retry call ..\scripts\return.bat 1
     @if %errorlevel% equ 0 goto :built
 
-    @echo FATAL: persistent failure while building installer with:  call stack --no-terminal build -j 2 --exec make-installer
+    @echo FATAL: persistent failure while building installer with:  call ..\scripts\return.bat 1
     exit /b 1
 :built
-@echo SUCCESS: call stack --no-terminal build -j 2 --exec make-installer
+@echo SUCCESS: call ..\scripts\return.bat 1
 popd
 
 @dir /b/s installers\daedalus*
