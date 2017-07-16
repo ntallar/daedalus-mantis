@@ -31,8 +31,11 @@ Changelog
 - Acceptance test for "Import wallet with/without spending password" feature
 - Acceptance test for "Send money from a wallet with spending password" feature
 - Acceptance test for "Generate wallet address" feature
+- Acceptance test for "Wallet settings management" features
 - Final version of Daedalus logo added on the loading screen
 - Final version of Daedalus logo added in the top-bar
+- Receive page design update
+- Correct placeholder text for Ada redemption "Ada amount" input
 
 ### Fixes
 
@@ -54,7 +57,18 @@ Changelog
 - Improved API nextUpdate response errors handling
 - Improved active wallet data refresh after wallet balance/settings change
 - Fixed failing wallet add/restore/import acceptance tests
-- Polling should be disable while node is syncing with the blockchain
+- Polling for wallet data and system update should be disabled while node is syncing with the blockchain
+- Prevent syncing icon from being always stuck in syncing state by refactoring in-sync state calculation
+- Acceptance test for "Sending money" feature should check receiver wallet's balance
+- Improved spending password validation rules
+- Improved acceptance tests for generating new addresses
+- Removed temporary workaround for creating new accounts during wallet create and wallet restore
+- Prevent React key duplicates in transaction from/to addresses lists
+- Show more specific error messages on "Change password" dialog
+- Update password fields placeholders to match latest designs
+- Prevent selected wallet reset on "Ada redemption" screen on tab or certificate change
+- Fixed sending amount maximum value validation
+- Use correct styling for used addresses marking on wallet receive screen
 
 ### Chores
 
@@ -63,6 +77,7 @@ Changelog
 - Use markdown for "Terms of use" content
 - Added manually written Flow types for API responses
 - Testnet version on the testnet label bumped from 0.3 to 0.5
+- Temporary workaround for missing Japanese translations for Terms of Use that allows users to accept them in English
 
 
 ## 0.6.2

@@ -6,35 +6,40 @@ import           System.FilePath (pathSeparator)
 
 -- OS dependent configuration
 data Launcher = Launcher
-    { nodePath      :: String
-    , nodeLogPath   :: String
-    , walletPath    :: String
-    , installerPath :: String
-    , runtimePath   :: String
+    { nodePath             :: String
+    , nodeLogPath          :: String
+    , walletPath           :: String
+    , installerPath        :: String
+    , windowsInstallerPath :: Maybe String
+    , installerArgs        :: [String]
+    , installerArchivePath :: Maybe String
+    , runtimePath          :: String
     }
 
 launcherArgs :: Launcher -> String
 launcherArgs launcher = unwords $
+    maybe [] (("--updater-windows-runner":) . (:[]) . quote) (windowsInstallerPath launcher) ++
   [ "--node", quote (nodePath launcher)
   , "--node-log-path", quote (nodeLogPath launcher)
   , "--wallet", quote (walletPath launcher)
-  , "--updater ", quote (installerPath launcher)
+  , "--updater", quote (installerPath launcher)
+  , unwords $ map ("-u " ++) (installerArgs launcher)
+  , maybe "" (("--update-archive " ++) . quote) (installerArchivePath launcher)
   , "--node-timeout 5"
-  , (" -n " ++ (L.intercalate " -n " nodeArgs))
+  , unwords $ map ("-n " ++) nodeArgs
   ]
     where
       nodeArgs = [
+        "--report-server", "http://report-server.aws.iohk.io:8080",
         "--log-config", "log-config-prod.yaml",
         "--update-latest-path", quote (installerPath launcher),
-        "--keyfile", quote (runtimePath launcher <> "Secrets" <> (pathSeparator : "secret.key")),
+        "--keyfile", quote (runtimePath launcher <> "Secrets-0.5" <> (pathSeparator : "secret.key")),
         "--logs-prefix", quote (runtimePath launcher <> "Logs"),
-        "--db-path", quote (runtimePath launcher <> "DB-0.4"),
-        "--wallet-db-path", quote (runtimePath launcher <> "Wallet-0.4"),
+        "--db-path", quote (runtimePath launcher <> "DB-0.5"),
+        "--wallet-db-path", quote (runtimePath launcher <> "Wallet-0.5"),
         "--kademlia-peers-file", "ip-dht-mappings",
-        "--update-server", "http://localhost:8080/",
-        "--system-start", "1497443187",
+        "--system-start", "1499360281",
         "--wallet",
-        "--update-with-package",
         "--static-peers"
         ]
 

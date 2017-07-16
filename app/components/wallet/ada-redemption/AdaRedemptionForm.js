@@ -22,7 +22,7 @@ const messages = defineMessages({
   headline: {
     id: 'wallet.redeem.dialog.headline',
     defaultMessage: '!!!Ada Redemption',
-    description: 'headline "Ada redemption" dialog.'
+    description: 'Headline "Ada redemption" dialog.'
   },
   instructionsRegular: {
     id: 'wallet.redeem.dialog.instructions.regular',
@@ -32,7 +32,7 @@ Below is an example of a redemption key. Your key will look similar:</p>
 <p>If you upload a PDF file with your certificate, a redemption code will be automatically extracted.</p>
 <p>If you upload an <strong>encrypted certificate</strong>, you will need to provide a <strong>9 word mnemonic
 passphrase</strong> to decrypt your certificate and your redemption code will be automatically extracted.</p>`,
-    description: '!!!Detailed instructions for redeeming Ada from the regular vending',
+    description: 'Detailed instructions for redeeming Ada from the regular vending',
   },
   instructionsForceVended: {
     id: 'wallet.redeem.dialog.instructions.forceVended',
@@ -41,13 +41,13 @@ Below is an example of a redemption key. Your key will look similar:</p><p><stro
 <p>If you upload a PDF file with your certificate, the redemption code will be automatically extracted.</p>
 <p>If you upload an <strong>encrypted certificate</strong>, you will need to provide <strong>your email address, Ada passcode and Ada amount</strong>
 to decrypt your certificate and your redemption code will be automatically extracted.</p>`,
-    description: '!!!Detailed instructions.regular',
+    description: 'Detailed instructions for redeeming Ada from the force vending',
   },
   instructionsPaperVended: {
     id: 'wallet.redeem.dialog.instructions.paperVended',
-    defaultMessage: `<p>To redeem your Ada, enter your shielded vending key from the certificate, choose a wallet
+    defaultMessage: `!!!<p>To redeem your Ada, enter your shielded vending key from the certificate, choose a wallet
 where Ada should be redeemed and enter 9 word mnemonic passphrase.</p>`,
-    description: '!!!Detailed instructions.regular',
+    description: 'Detailed instructions for redeeming Ada from the paper vending',
   },
   certificateLabel: {
     id: 'wallet.redeem.dialog.certificateLabel',
@@ -136,7 +136,7 @@ where Ada should be redeemed and enter 9 word mnemonic passphrase.</p>`,
   },
   adaAmountHint: {
     id: 'wallet.redeem.dialog.adaAmountHint',
-    defaultMessage: '!!!Enter your Ada passcode',
+    defaultMessage: '!!!Enter your Ada amount',
     description: 'Hint for the Ada amount input field.'
   },
   walletPasswordPlaceholder: {
@@ -336,7 +336,19 @@ export default class AdaRedemptionForm extends Component {
     // We need to disable on-change validation before reseting the form in order to
     // avoid debounced validation being called straight after the form is reset
     form.state.options.set({ validateOnChange: false });
-    form.reset();
+
+    // We can not user form.reset() call here as it would reset selected walletId
+    // which is a bad UX since we are calling resetForm on certificate add/remove
+    form.$('walletPassword').reset();
+    form.$('adaAmount').reset();
+    form.$('adaPasscode').reset();
+    form.$('certificate').reset();
+    form.$('email').reset();
+    form.$('passPhrase').reset();
+    form.$('redemptionKey').reset();
+    form.$('shieldedRedemptionKey').reset();
+    form.$('walletPassword').reset();
+
     form.showErrors(false);
     form.state.options.set({ validateOnChange: true });
   };
