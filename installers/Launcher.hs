@@ -39,12 +39,12 @@ launcherArgs launcher = unwords $
         "--kademlia-peers-file", "ip-dht-mappings",
         "--system-start", "1499360281",
         "--wallet",
-        "--tlscert", quote (runtimePath launcher <> tlsPath <> "server" <> pathSeparator <> "server.crt"),
-        "--tlskey", quote (runtimePath launcher <> tlsPath <> "server" <> pathSeparator <> "server.key"),
-        "--tlsca", quote (runtimePath launcher <> tlsPath <> "ca" <> pathSeparator <> "ca.crt"),
+        "--tlscert", quote (runtimePath launcher <> tlsPath <> "server" <> (pathSeparator : "server.crt")),
+        "--tlskey", quote (runtimePath launcher <> tlsPath <> "server" <> (pathSeparator : "server.key")),
+        "--tlsca", quote (runtimePath launcher <> tlsPath <> "ca" <> (pathSeparator : "ca.crt")),
         "--static-peers"
         ]
-      tlsPath = "tls" <> pathSeparator <> "tls" <> pathSeparator
+      tlsPath = "tls" <> (pathSeparator : "tls") <> (pathSeparator : [])
 
 quote :: String -> String
 quote p = "\"" <> p <> "\""
