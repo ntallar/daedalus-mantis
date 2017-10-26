@@ -11,7 +11,7 @@ usage() {
     test -z "$1" || { echo "ERROR: $*" >&2; echo >&2; }
     cat >&2 <<EOF
   Usage:
-    $0 DAEDALUS-VERSION CARDANO-BRANCH OPTIONS*
+    $0 DAEDALUS-VERSION OPTIONS*
 
   Build a Daedalus installer.
 
@@ -27,7 +27,7 @@ usage() {
 
     --verbose                 Verbose operation
     --quiet                   Disable verbose operation
-
+    
 EOF
     test -z "$1" || exit 1
 }
@@ -56,7 +56,7 @@ upload_s3=
 test_install=
 
 daedalus_version="$1"; arg2nz "daedalus version" $1; shift
-cardano_branch="$(printf '%s' "$1" | tr '/' '-')"; arg2nz "Cardano SL branch to build Daedalus with" $1; shift
+mantis_location="/Users/dev/Documents/mantis-client/mantis/target/jdkpackager/bundles/mantis.app"
 
 case "$(uname -s)" in
         Darwin ) os=osx;   key=macos-3.p12;;
@@ -97,20 +97,10 @@ export PATH=$HOME/.local/bin:$PATH
 export DAEDALUS_VERSION=${daedalus_version}.${build_id}
 if [ -n "${NIX_SSL_CERT_FILE-}" ]; then export SSL_CERT_FILE=$NIX_SSL_CERT_FILE; fi
 
-test -d node_modules/daedalus-client-api/ -a -n "${fast_impure}" || {
-        retry 5 curl -o daedalus-bridge.tar.xz \
-              "https://s3.eu-central-1.amazonaws.com/cardano-sl-travis/daedalus-bridge-${os}-${cardano_branch}.tar.xz"
-        mkdir -p node_modules/daedalus-client-api/
-        du -sh  daedalus-bridge.tar.xz
-        tar xJf daedalus-bridge.tar.xz --strip-components=1 -C node_modules/daedalus-client-api/
-        rm      daedalus-bridge.tar.xz
-        echo "cardano-sl build id is $(cat node_modules/daedalus-client-api/build-id)"
-        pushd node_modules/daedalus-client-api
-              mv log-config-prod.yaml cardano-node cardano-launcher ../../installers
-        popd
-        chmod +w installers/cardano-{node,launcher}
-        strip installers/cardano-{node,launcher}
-        rm -f node_modules/daedalus-client-api/cardano-*
+# FIXME: The Mantis client is moved from a local folder, this should be changed with downloading the client
+test -d installers/mantis.app/ -a -n "${fast_impure}" || {
+        rm -rf installers/mantis.app/
+        cp -r "${mantis_location}" installers
 }
 
 test "$(find node_modules/ | wc -l)" -gt 100 -a -n "${fast_impure}" ||
@@ -129,7 +119,7 @@ cd installers
     if test "${travis_pr}" = "false" -a "${os}" != "linux" # No Linux keys yet.
     then retry 5 nix-shell -p awscli --run "aws s3 cp --region eu-central-1 s3://iohk-private/${key} macos.p12"
     fi
-    retry 5 $(nix-build -j 2)/bin/make-installer
+    retry 5 $(nix-build -j 2)/bin/mantis-make-installer
     mkdir -p dist
     if test -n "${upload_s3}"
     then
